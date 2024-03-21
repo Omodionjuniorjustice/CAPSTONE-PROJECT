@@ -2,10 +2,16 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: junior-ingress
-  namespace: junior20
+  namespace: sock-shop
   annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  tls:
+    - hosts:
+        - junior.com
+      secretName: junior-tls
   rules:
     - host: junior.com
       http:
@@ -14,17 +20,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: front-end
                 port:
                   number: 80
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: backend
-                port:
-                  number: 8080
-  tls:
-    - hosts:
-        - junior.com
-      secretName: junior-tls
