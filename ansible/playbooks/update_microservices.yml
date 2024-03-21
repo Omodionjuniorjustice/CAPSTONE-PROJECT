@@ -1,0 +1,90 @@
+---
+- name: Update Microservices
+  hosts: localhost
+  tasks:
+    - name: Gathering Facts
+      ansible.builtin.setup:
+      vars:
+        ansible_python_interpreter: /Users/mac/capstone-project/ansible/myenv/bin/python
+
+    - name: Update frontend deployment image
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          kind: Deployment
+          apiVersion: apps/v1
+          metadata:
+            name: frontend
+            namespace: junior20  # Specify the namespace
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: frontend
+                    image: 192.168.49.2:5000/microservice1:new_tag  # Update with your new image tag
+                    ports:
+                      - containerPort: 80
+                    imagePullPolicy: IfNotPresent
+      vars:
+        ansible_python_interpreter: /Users/mac/capstone-project/ansible/myenv/bin/python
+
+    - name: Update backend deployment image
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          kind: Deployment
+          apiVersion: apps/v1
+          metadata:
+            name: backend
+            namespace: junior20  # Specify the namespace
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: backend
+                    image: 192.168.49.2:5000/microservice2:new_tag  # Update with your new image tag
+                    ports:
+                      - containerPort: 8080
+                    imagePullPolicy: IfNotPresent
+      vars:
+        ansible_python_interpreter: /Users/mac/capstone-project/ansible/myenv/bin/python
+
+    - name: Update service1
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          kind: Service
+          apiVersion: v1
+          metadata:
+            name: service1
+            namespace: junior20  # Specify the namespace
+          spec:
+            selector:
+              app: frontend
+            ports:
+              - protocol: TCP
+                port: 80
+                targetPort: 80
+            type: LoadBalancer
+      vars:
+        ansible_python_interpreter: /Users/mac/capstone-project/ansible/myenv/bin/python
+
+    - name: Update service2
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          kind: Service
+          apiVersion: v1
+          metadata:
+            name: service2
+            namespace: junior20  # Specify the namespace
+          spec:
+            selector:
+              app: backend
+            ports:
+              - protocol: TCP
+                port: 80
+                targetPort: 8080
+            type: LoadBalancer
+      vars:
+        ansible_python_interpreter: /Users/mac/capstone-project/ansible/myenv/bin/python

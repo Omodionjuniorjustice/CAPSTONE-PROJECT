@@ -1,0 +1,31 @@
+- name: Deploy Microservices
+  hosts: localhost
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /Users/mac/capstone-project/ansible/myenv/bin/python
+
+  tasks:
+    - name: Apply Kubernetes manifests
+      k8s:
+        state: present
+        src: ../../kubernetes/service1.yaml
+
+    - name: Apply Kubernetes manifests
+      k8s:
+        state: present
+        src: ../../kubernetes/deployment1.yaml
+
+    - name: Apply Kubernetes manifests
+      k8s:
+        state: present
+        src: ../../kubernetes/metallb-config.yaml
+
+    - name: Apply Kubernetes manifests
+      k8s:
+        state: present
+        src: ../../kubernetes/deployment2.yaml
+
+    - name: Apply Kubernetes manifests
+      k8s:
+        state: present
+        src: ../../kubernetes/service2.yaml
